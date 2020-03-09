@@ -1,0 +1,15 @@
+add_subdirectory(Components)
+
+set(SOURCES
+    ${SOURCES}
+	"${CMAKE_CURRENT_SOURCE_DIR}/main.cpp"
+    PARENT_SCOPE)
+
+set(HEADERS
+    ${HEADERS}
+    PARENT_SCOPE)
+
+set(INCLUDE_DIRS
+    ${INCLUDE_DIRS}
+	"${CMAKE_CURRENT_SOURCE_DIR}"
+    PARENT_SCOPE)

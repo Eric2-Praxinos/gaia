@@ -1,0 +1,8 @@
+﻿set(SOURCE
+    ${SOURCE}
+	"${CMAKE_CURRENT_SOURCE_DIR}/MyButton.cpp"
+    PARENT_SCOPE)
+
+set(HEADERS
+    ${HEADERS}
+    PARENT_SCOPE)

@@ -1,0 +1,20 @@
+﻿add_subdirectory(Engine)
+
+set(SOURCES
+    ${SOURCES}
+	"${CMAKE_CURRENT_SOURCE_DIR}/Application.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/GaiaOptions.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Router.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Gaia.cpp"
+    PARENT_SCOPE)
+
+set(HEADERS
+    ${HEADERS}
+	"${CMAKE_CURRENT_SOURCE_DIR}/Application.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/GaiaOptions.h"
+    PARENT_SCOPE)
+
+set(INCLUDE_DIRS
+    ${INCLUDE_DIRS}
+	"${CMAKE_CURRENT_SOURCE_DIR}"
+    PARENT_SCOPE)
