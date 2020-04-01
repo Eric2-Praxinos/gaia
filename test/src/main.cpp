@@ -3,6 +3,7 @@
 
 // #include <iostream>
 #include "Gaia.h"
+#include "Components/MyButton.h"
 
 ::nGaia::cRouter* MakeRoutes() {
 	::nGaia::cRouter* router = new ::nGaia::cRouter();
@@ -14,8 +15,8 @@ int main()
 {
 	::nGaia::cRouter* router = MakeRoutes();
 	::nGaia::init(router); //give router and default route name, will open a Window containing this route
-	
-	/* 
+
+	/*
 		GaiaOptions options;
 		options.Add("Category", "Option", 10);
 		printf("%d\n", options.Get<int>("Category", "Option"));
@@ -28,6 +29,14 @@ int main()
 
 		Application* application = gaia->CreateApplication(options);
 	*/
+
+	cMyButton myButton;
+
+	printf("Width = %d\n", myButton.mWidth.Value());
+	printf("Height = %lf\n", myButton.mHeight.Value());
+	printf("Area = %lf\n", myButton.mWidth * myButton.mHeight);
+	//printf("Name = %s\n", component.Name().c_str());
+	// printf("Height = %d\n", component.Height());
 
 	// wait
 	int test;

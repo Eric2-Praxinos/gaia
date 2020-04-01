@@ -5,4 +5,5 @@
 
 set(HEADERS
     ${HEADERS}
+    "${CMAKE_CURRENT_SOURCE_DIR}/MyButton.h"
     PARENT_SCOPE)
