@@ -34,7 +34,10 @@ int main()
 
 	printf("Width = %d\n", myButton.mWidth.Value());
 	printf("Height = %lf\n", myButton.mHeight.Value());
-	printf("Area = %lf\n", myButton.mWidth * myButton.mHeight);
+	printf("Width * Height = %lf\n", myButton.mWidth * myButton.mHeight);
+	printf("Area = %lf\n", myButton.mArea.Value());
+	printf("Width * Height == Area = %s\n", myButton.mWidth * myButton.mHeight == myButton.mArea ? "true" : "false");
+	printf("Width * Height + 1 == Area = %s\n", myButton.mWidth * myButton.mHeight + 1 == myButton.mArea ? "true" : "false");
 	//printf("Name = %s\n", component.Name().c_str());
 	// printf("Height = %d\n", component.Height());
 
