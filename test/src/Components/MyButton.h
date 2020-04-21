@@ -1,8 +1,6 @@
 #include "Gaia.h"
 #include <vector>
 
-#define DATA ::nGaia::cComponentFixedData
-#define COMPUTED ::nGaia::cComponentComputedData
 template<typename T, typename S>
 class cTest {
 
@@ -25,7 +23,5 @@ BEGIN_COMPONENT(cMyButton)
 	COMPUTED<double> mVolume = [this]() {
 		return this->mArea * this->mLength;
 	};
-
-
 
 END_COMPONENT()

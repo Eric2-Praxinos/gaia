@@ -3,6 +3,7 @@
 #include "ComponentData.h"
 #include <functional>
 
+#define COMPUTED ::nGaia::cComponentComputedData
 namespace nGaia {
 
 template<typename T>

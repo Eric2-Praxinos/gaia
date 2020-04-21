@@ -2,6 +2,7 @@
 
 #include "ComponentData.h"
 
+#define DATA ::nGaia::cComponentFixedData
 namespace nGaia {
 
 template<typename T>
