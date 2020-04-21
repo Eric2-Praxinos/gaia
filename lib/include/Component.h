@@ -1,4 +1,6 @@
-#include "ComponentData.h"
+#pragma once
+
+#include "ComponentFixedData.h"
 #include "ComponentComputedData.h"
 
 namespace nGaia {

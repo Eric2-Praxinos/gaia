@@ -4,6 +4,7 @@
 // #include <iostream>
 #include "Gaia.h"
 #include "Components/MyButton.h"
+#include <conio.h>
 
 ::nGaia::cRouter* MakeRoutes() {
 	::nGaia::cRouter* router = new ::nGaia::cRouter();
@@ -31,18 +32,48 @@ int main()
 	*/
 
 	cMyButton myButton;
-
-	printf("Width = %d\n", myButton.mWidth.Value());
-	printf("Height = %lf\n", myButton.mHeight.Value());
-	printf("Width * Height = %lf\n", myButton.mWidth * myButton.mHeight);
-	printf("Area = %lf\n", myButton.mArea.Value());
-	printf("Width * Height == Area = %s\n", myButton.mWidth * myButton.mHeight == myButton.mArea ? "true" : "false");
-	printf("Width * Height + 1 == Area = %s\n", myButton.mWidth * myButton.mHeight + 1 == myButton.mArea ? "true" : "false");
 	//printf("Name = %s\n", component.Name().c_str());
 	// printf("Height = %d\n", component.Height());
 
-	// wait
-	int test;
-	std::scanf("%d", &test);
+	while(1) {
+		printf("=================================================\n");
+		printf("Width = %d\n", myButton.mWidth.Value());
+		printf("Height = %lf\n", myButton.mHeight.Value());
+		printf("Length = %ld\n", myButton.mLength.Value());
+		printf("Width * Height = %lf\n", myButton.mWidth * myButton.mHeight);
+		printf("Area = %lf\n", myButton.mArea.Value());
+		printf("Width * Height * Length = %lf\n", myButton.mWidth * myButton.mHeight * myButton.mLength);
+		printf("Volume = %lf\n", myButton.mVolume.Value());
+		printf("Width * Height == Area = %s\n", myButton.mWidth * myButton.mHeight == myButton.mArea ? "true" : "false");
+		printf("Width * Height + 1 == Area = %s\n", myButton.mWidth * myButton.mHeight + 1 == myButton.mArea ? "true" : "false");
+
+
+		wchar_t key = _getwch();
+		if (key == 27) {
+			break;
+		}
+
+		if (key == 0 || key == 224) {
+			key = _getwch();
+			switch(key) {
+				case 72: //UP
+					myButton.mHeight++;
+				break;
+
+				case 77: //RIGHT
+					myButton.mWidth++;
+				break;
+
+				case 80: //DOWN
+					myButton.mHeight--;
+				break;
+
+				case 75: //LEFT
+					myButton.mWidth--;
+				break;
+			}
+			continue;
+		}
+	}
 	return 0;
 }
