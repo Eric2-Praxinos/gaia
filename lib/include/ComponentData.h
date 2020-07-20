@@ -24,6 +24,8 @@ public:
 	}
 
 public:
+	virtual void Lock() {}
+	virtual void Unlock() {}
 
 };
 

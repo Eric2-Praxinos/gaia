@@ -1,11 +1,11 @@
-#include <tuple>
+#pragma once
+
+//#include <vector>
+#include "ComponentData.h"
 
 namespace nGaia {
 
-template<class ... Types>
 class cComponentFixedDataEditionHandler {
-private:
-    typedef
 
 public:
     ~cComponentFixedDataEditionHandler()
@@ -13,27 +13,29 @@ public:
         Unlock();
     }
 
-    cComponentFixedDataEditionHandler(Types& ... iData) :
-        mData(::std::make_tuple(iData...))
+    cComponentFixedDataEditionHandler(/*const ::std::vector<cComponentData*>& iData*/) //:
+        //mData(iData)
     {
         Lock();
     }
 
 private:
     void Lock() {
-        for(int i = 0; i < ::std::tuple_size<Types...>::value; i++) {
+        /* for(int i = 0; i < ::std::tuple_size<::std::tuple<Types...>>::value; i++) {
             auto data = ::std::get<i>(mData);
             data.Lock();
-        }
+        } */
     }
 
     void Unlock() {
-        for(int i = 0; i < ::std::tuple_size<Types...>::value; i++) {
-            auto data = ::std::get<i>(mData);*
+        /* for(int i = 0; i < ::std::tuple_size<::std::tuple<Types...>>::value; i++) {
+            auto data = ::std::get<i>(mData);
             data.Unlock();
-        }
+        } */
     }
 
 private:
-    ::std::tuple<Types...> mData;
+    //::std::vector<cComponentData*> mData;
+};
+
 }
