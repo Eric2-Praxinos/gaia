@@ -7,20 +7,14 @@
 namespace nGaia {
 
 template<typename T>
-class cComponentComputedData : public cComponentData<T>
+class cComponentComputedData : public cComponentData
 {
 private:
-	typedef cComponentComputedData<T> tSelfType;
-
-private:
     const ::std::function<T ()> mFunction;
-	mutable T mCachedValue;
+	mutable T mValue;
 	bool mIsDirty;
 	long mGetCBRefCount;
-
-private:
-	::std::function<void (cDependency*)> mBeforeGetCB;
-	::std::function<void (cDependency*)> mAfterGetCB;
+	::std::vector<const cComponentData*> mDependencies;
 
 public:
     // destructor
@@ -37,65 +31,73 @@ public:
     // assignment constructor
     cComponentComputedData(const ::std::function<T ()>& iFunction) :
 		mFunction(iFunction),
-		mCachedValue(),
+		mValue(),
 		mIsDirty(true),
-		mBeforeGetCB(),
-		mAfterGetCB(),
-		mGetCBRefCount(0)
+		mGetCBRefCount(0),
+		mDependencies()
 	{
-		mBeforeGetCB = [this](cDependency* iDependency) {
-			if (mGetCBRefCount == 0) {
-				AddUpDependency(iDependency);
-			}
-			mGetCBRefCount++;
-		};
-		mAfterGetCB = [this](cDependency* iDependency) {
-			mGetCBRefCount--;
-		};
 	}
 
 public:
-	virtual const T& Value() const
+
+	void OnComponentDataGetAfter(const cComponentData* iDependency)
 	{
-		cDataManager::Instance()->BeforeGet(const_cast<cComponentComputedData*>(this));
-		const_cast<cComponentComputedData<T>*>(this)->RefreshValue();
-		cDataManager::Instance()->AfterGet(const_cast<cComponentComputedData*>(this));
-		return mCachedValue;
+		mGetCBRefCount--;
 	}
 
-public:
-	virtual void OnDependencyBeforeChanged(const cDependency* iDependency)
+	void OnDependencyChanged(const cComponentData* iDependency)
 	{
 		mIsDirty = true;
+		Emit(EventChanged);
 	}
 
-	virtual void OnDependencyAfterChanged(const cDependency* iDependency)
+	void OnComponentDataGetBefore(const cComponentData* iDependency)
 	{
-		RefreshValue();
+		if (mGetCBRefCount == 0) {
+			mDependencies.push_back(iDependency);
+			ADD_EVENT_LISTENER(iDependency, EventChanged, this, &cComponentComputedData<T>::OnDependencyChanged);
+		}
+		mGetCBRefCount++;
 	}
 
     // property get
-    operator T() const
+    operator const T&() const
 	{
-		return Value();
+		Emit(EventGetBefore);
+		const_cast<cComponentComputedData<T>*>(this)->RefreshValue();
+		Emit(EventGetAfter);
+		return mValue;
 	}
 
-	T GenerateValue() {
-		if (mGetCBRefCount != 0) {
-			throw "Infinite dependency loop !";
-		}
-		ClearUpDependencies();
-		cDataManager::Instance()->AddBeforeGetListener(&mBeforeGetCB);
-		cDataManager::Instance()->AddAfterGetListener(&mAfterGetCB);
-		T value =  mFunction();
-		cDataManager::Instance()->RemoveBeforeGetListener(&mBeforeGetCB);
-		cDataManager::Instance()->RemoveAfterGetListener(&mAfterGetCB);
-		return value;
+    // property get
+    const T& operator ()() const
+	{
+		Emit(EventGetBefore);
+		const_cast<cComponentComputedData<T>*>(this)->RefreshValue();
+		Emit(EventGetAfter);
+		return mValue;
 	}
 
 	void RefreshValue() {
+		//TODO: Mutex Lock
+		//For this object, the refresh function must not be called by anyone other than this thread
 		if (mIsDirty) {
-			mCachedValue = GenerateValue();
+			//TODO: Lock all Data Edition Globally and in every threads
+			//TODO: Wait for all data edition to be done
+			/* if (mIsRefreshing) {
+				throw "Infinite dependency loop in dependencies !";
+			} */
+			for (auto it = mDependencies.begin(); it != mDependencies.end(); ++it)
+			{
+				REMOVE_EVENT_LISTENER(*it, EventChanged, this, &cComponentComputedData<T>::OnDependencyChanged);
+			}
+			mDependencies.clear();
+
+			ADD_GLOBAL_EVENT_LISTENER(cComponentData, EventGetBefore, this, &cComponentComputedData<T>::OnComponentDataGetBefore);
+			ADD_GLOBAL_EVENT_LISTENER(cComponentData, EventGetAfter, this, &cComponentComputedData<T>::OnComponentDataGetAfter);
+			mValue =  mFunction();
+			REMOVE_GLOBAL_EVENT_LISTENER(cComponentData, EventGetBefore, this, &cComponentComputedData<T>::OnComponentDataGetBefore);
+			REMOVE_GLOBAL_EVENT_LISTENER(cComponentData, EventGetAfter, this, &cComponentComputedData<T>::OnComponentDataGetAfter);
 			mIsDirty = false;
 		}
 	}

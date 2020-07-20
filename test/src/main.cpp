@@ -3,8 +3,9 @@
 
 // #include <iostream>
 #include "Gaia.h"
-#include "Components/MyButton.h"
+#include "Components/MyHouse.h"
 #include <conio.h>
+#include <iostream>
 
 ::nGaia::cRouter* MakeRoutes() {
 	::nGaia::cRouter* router = new ::nGaia::cRouter();
@@ -23,29 +24,29 @@ int main()
 		printf("%d\n", options.Get<int>("Category", "Option"));
 		options.Set("Category", "Option", 20);
 		printf("%d\n", options.Get<int>("Category", "Option"));
-		options.Add<std::string>("MyButton", "label1", "str");
+		options.Add<std::string>("MyHouse", "label1", "str");
 
-		std::string str = options.Get<std::string>("MyButton", "label");
+		std::string str = options.Get<std::string>("MyHouse", "label");
 		std::cout << str << std::endl;
 
 		Application* application = gaia->CreateApplication(options);
 	*/
 
-	cMyButton myButton;
+	cMyHouse myHouse;
 	//printf("Name = %s\n", component.Name().c_str());
 	// printf("Height = %d\n", component.Height());
 
 	while(1) {
 		printf("=================================================\n");
-		printf("Width = %d\n", myButton.mWidth.Value());
-		printf("Height = %lf\n", myButton.mHeight.Value());
-		printf("Length = %ld\n", myButton.mLength.Value());
-		printf("Width * Height = %lf\n", myButton.mWidth * myButton.mHeight);
-		printf("Area = %lf\n", myButton.mArea.Value());
-		printf("Width * Height * Length = %lf\n", myButton.mWidth * myButton.mHeight * myButton.mLength);
-		printf("Volume = %lf\n", myButton.mVolume.Value());
-		printf("Width * Height == Area = %s\n", myButton.mWidth * myButton.mHeight == myButton.mArea ? "true" : "false");
-		printf("Width * Height + 1 == Area = %s\n", myButton.mWidth * myButton.mHeight + 1 == myButton.mArea ? "true" : "false");
+		printf("Width = %d\n", myHouse.mWidth());
+		printf("Height = %lf\n", myHouse.mHeight());
+		printf("Length = %ld\n", myHouse.mLength());
+		printf("Width * Height = %lf\n", myHouse.mWidth * myHouse.mHeight);
+		printf("Area = %lf\n", myHouse.mArea());
+		printf("Width * Height * Length = %lf\n", myHouse.mWidth * myHouse.mHeight * myHouse.mLength);
+		printf("Volume = %lf\n", myHouse.mVolume());
+		printf("Width * Height == Area = %s\n", myHouse.mWidth * myHouse.mHeight == myHouse.mArea ? "true" : "false");
+		printf("Width * Height + 1 == Area = %s\n", myHouse.mWidth * myHouse.mHeight + 1 == myHouse.mArea ? "true" : "false");
 
 
 		wchar_t key = _getwch();
@@ -55,24 +56,29 @@ int main()
 
 		if (key == 0 || key == 224) {
 			key = _getwch();
-			switch(key) {
-				case 72: //UP
-					myButton.mHeight++;
-				break;
+			EDIT(myHouse.mWidth, myHouse.mHeight) AS(w, h)
+			{
+				switch(key)
+				{
+					case 72: {
+						h++;
+					}
+					break;
 
-				case 77: //RIGHT
-					myButton.mWidth++;
-				break;
+					case 77: //RIGHT
+						w++;
+					break;
 
-				case 80: //DOWN
-					myButton.mHeight--;
-				break;
+					case 80: //DOWN
+						h--;
+					break;
 
-				case 75: //LEFT
-					myButton.mWidth--;
-				break;
+					case 75: //LEFT
+						w--;
+					break;
+				}
+				continue;
 			}
-			continue;
 		}
 	}
 	return 0;

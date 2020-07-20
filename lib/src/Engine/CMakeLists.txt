@@ -1,6 +1,7 @@
 ﻿set(SOURCES
     ${SOURCES}
-	"${CMAKE_CURRENT_SOURCE_DIR}/Component.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Component.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ComponentData.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Node.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Window.cpp"
     PARENT_SCOPE)

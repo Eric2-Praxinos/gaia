@@ -41,7 +41,7 @@ cRouter::cRouter() :
 
 const cRoute&
 cRouter::Route(const ::std::string& iPath) const {
-	return cRoute();
+	return mRoutes[0];
 }
 
 void

@@ -1,18 +1,17 @@
 #include "Gaia.h"
 #include <vector>
 
-template<typename T, typename S>
-class cTest {
-
+class cRoom {
+	DATA<int> mWidth;
+	DATA<int> mLength;
 };
 
-BEGIN_COMPONENT(cMyButton)
+BEGIN_COMPONENT(cMyHouse)
 
 	// DECLARE DATA
-	DATA<int> mWidth = 50;
+	DATA<int> mWidth = 40;
 	DATA<double> mHeight = 50;
-	DATA<long> mLength = 50;
-	DATA<cTest<int, double>> mVector1 = cTest<int, double>();
+	DATA<long> mLength = 60;
 
 	// DECLARE COMPUTED DATA
 	COMPUTED<double> mArea = [this]() {

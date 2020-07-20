@@ -1,9 +1,9 @@
 ﻿set(SOURCE
     ${SOURCE}
-	"${CMAKE_CURRENT_SOURCE_DIR}/MyButton.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/MyHouse.cpp"
     PARENT_SCOPE)
 
 set(HEADERS
     ${HEADERS}
-    "${CMAKE_CURRENT_SOURCE_DIR}/MyButton.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/MyHouse.h"
     PARENT_SCOPE)

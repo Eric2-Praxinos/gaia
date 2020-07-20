@@ -3,16 +3,26 @@
 #include "ComponentData.h"
 
 #define DATA ::nGaia::cComponentFixedData
+
+#define EDIT(...) \
+for(int GAIA_DATA_EDITION_COUNTER = 0; GAIA_DATA_EDITION_COUNTER < 1;) \
+for(auto GAIA_DATA_EDITION_HANDLER = ::nGaia::GetEditionHandlers(__VA_ARGS__); GAIA_DATA_EDITION_COUNTER < 1;) \
+for(auto GAIA_DATA_EDITION_TUPLES = ::nGaia::GetEditables(__VA_ARGS__); GAIA_DATA_EDITION_COUNTER < 1;)
+
+#define AS(...) \
+for(auto [__VA_ARGS__] = GAIA_DATA_EDITION_TUPLES;GAIA_DATA_EDITION_COUNTER < 1; GAIA_DATA_EDITION_COUNTER++)
+
+#define EDITASSAME(...) \
+EDIT(__VA_ARGS__) \
+AS(__VA_ARGS__)
+
 namespace nGaia {
 
 template<typename T>
-class cComponentFixedData : public cComponentData<T>
+class cComponentFixedData : public cComponentData
 {
 private:
 	typedef cComponentFixedData<T> tSelfType;
-
-private:
-    T mValue;
 
 public:
     // destructor
@@ -34,165 +44,60 @@ public:
 	}
 
 public:
-	virtual const T& Value() const
+	const T& Value() const
 	{
-		cDataManager::Instance()->BeforeGet(const_cast<cComponentFixedData*>(this));
-		cDataManager::Instance()->AfterGet(const_cast<cComponentFixedData*>(this));
+		Emit(EventGetBefore);
+		Emit(EventGetAfter);
 		return mValue;
 	}
 
-	void Value(const T& iValue)
-	{
-		BeforeChange();
-		mValue = iValue;
-		AfterChange();
-	}
-
 public:
-	virtual void OnDependencyBeforeChanged(const cDependency* iDependency)
-	{
-		//Does nothing
-	}
-
-	virtual void OnDependencyAfterChanged(const cDependency* iDependency)
-	{
-		//Does nothing
-	}
-
-public:
-    // property get
-    operator T() const
-	{
-		return Value();
-	}
-
-    // property set
-    tSelfType& operator=(const T& iValue)
-    {
-		BeforeChange();
-        mValue = iValue;
-		AfterChange();
-        return *this;
+    T& GetEditable() {
+		//TODO: Add global mutex, for edition lock
+        return mValue;
     }
 
-	tSelfType& operator++()
+    T& GetEditionHandler() {
+		//TODO: Add global mutex, for edition lock
+        return mValue;
+    }
+
+	operator const T&() const
 	{
-		BeforeChange();
-		mValue++;
-		AfterChange();
-		return *this;
+		const T& t = Value();
+		return t;
 	}
 
-	tSelfType operator++(int)
+	const T& operator ()() const
 	{
-		tSelfType old = tSelfType(*this);
-		BeforeChange();
-		mValue++;
-		AfterChange();
-		return old;
+		const T& t = Value();
+		return t;
 	}
 
-	tSelfType& operator--()
-	{
-		BeforeChange();
-		mValue--;
-		AfterChange();
-		return *this;
+	void Lock() {
+		//Lock Edition
+		//Lock Get
 	}
 
-	tSelfType operator--(int)
-	{
-		tSelfType old = tSelfType(*this);
-		BeforeChange();
-		mValue--;
-		AfterChange();
-		return old;
+	void Unlock() {
+		//Lock Edition
+		//Lock Get
 	}
 
-	/* bool operator->*(T a, T b)
-	bool operator->(T a, T b)
-	*/
-
-	tSelfType& operator+=(T& iValue)
-	{
-		BeforeChange();
-		mValue += iValue;
-		AfterChange();
-		return *this;
-	}
-
-	tSelfType& operator-=(T& iValue)
-	{
-		BeforeChange();
-		mValue -= iValue;
-		AfterChange();
-		return *this;
-	}
-
-	tSelfType& operator*=(T& iValue)
-	{
-		BeforeChange();
-		mValue *= iValue;
-		AfterChange();
-		return *this;
-	}
-
-	tSelfType& operator/=(T& iValue)
-	{
-		BeforeChange();
-		mValue /= iValue;
-		AfterChange();
-		return *this;
-	}
-
-	tSelfType& operator%=(T& iValue)
-	{
-		BeforeChange();
-		mValue %= iValue;
-		AfterChange();
-		return *this;
-	}
-
-	tSelfType& operator^=(T& iValue)
-	{
-		BeforeChange();
-		mValue ^= iValue;
-		AfterChange();
-		return *this;
-	}
-
-	tSelfType& operator&=(T& iValue)
-	{
-		BeforeChange();
-		mValue &= iValue;
-		AfterChange();
-		return *this;
-	}
-
-	tSelfType& operator|=(T& iValue)
-	{
-		BeforeChange();
-		mValue |= iValue;
-		AfterChange();
-		return *this;
-	}
-
-	tSelfType& operator>>=(T& iValue)
-	{
-		BeforeChange();
-		mValue >>= iValue;
-		AfterChange();
-		return *this;
-	}
-
-	tSelfType& operator<<=(T& iValue)
-	{
-		BeforeChange();
-		mValue <<= iValue;
-		AfterChange();
-		return *this;
-	}
-
+private:
+    T mValue;
 };
+
+template <class ...Types>
+auto GetEditables(Types&... iData) {
+	//TODO: Add global mutex, for edition lock
+	return ::std::forward_as_tuple(iData.GetEditable()...);
+}
+
+template <class ...Types>
+auto GetEditionHandlers(Types... iData) {
+	//TODO: Add global mutex, for edition lock
+	return ::std::make_tuple(iData.GetEditable()...);
+}
 
 }
