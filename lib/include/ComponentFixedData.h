@@ -1,16 +1,18 @@
 #pragma once
 
 #include "ComponentData.h"
-#include "ComponentFixedDataEditionHandler.h"
+
+#include <vector>
 
 #define DATA ::nGaia::cComponentFixedData
 
+
 #define EDIT(...) \
-for(int GAIA_DATA_EDITION_COUNTER = 0; GAIA_DATA_EDITION_COUNTER < 1;) \
-for(auto GAIA_DATA_EDITION_TUPLES = ::nGaia::RetainEditables(__VA_ARGS__); GAIA_DATA_EDITION_COUNTER < 1;::nGaia::ReleaseEditables(__VA_ARGS__))
+if (::nGaia::cEditionHandles GAIA_DATA_EDITION_HANDLES(__VA_ARGS__); true) \
+if (auto GAIA_DATA_EDITION_TUPLE = ::nGaia::GetEditables(__VA_ARGS__); true)
 
 #define AS(...) \
-for(auto [__VA_ARGS__] = GAIA_DATA_EDITION_TUPLES;GAIA_DATA_EDITION_COUNTER < 1; GAIA_DATA_EDITION_COUNTER++)
+if (auto [__VA_ARGS__] = GAIA_DATA_EDITION_TUPLE; true)
 
 #define EDITASSAME(...) \
 EDIT(__VA_ARGS__) \
@@ -23,25 +25,6 @@ class cComponentFixedData : public cComponentData
 {
 private:
 	typedef cComponentFixedData<T> tSelfType;
-
-public:
-	class cEditionHandler
-	{
-		public:
-		cEditionHandler()
-		{
-			mData->Unlock();
-		}
-
-		cEditionHandler(cComponentFixedData* iData) :
-			mData(iData)
-		{
-			mData->Lock();
-		}
-
-		private:
-		cComponentFixedData* mData;
-	};
 
 public:
     // destructor
@@ -71,15 +54,8 @@ public:
 	}
 
 public:
-    T& RetainEditable() {
+    T& GetEditable() {
 		//TODO: Add global mutex, for edition lock
-		Lock();
-        return mValue;
-    }
-
-    T& ReleaseEditable() {
-		//TODO: Add global mutex, for edition lock
-		Unlock();
         return mValue;
     }
 
@@ -106,34 +82,72 @@ public:
 		Emit(EventChanged);
 	}
 
-	// friend cComponentFixedDataEditionHandler;
-
 private:
     T mValue;
 };
 
 template <class ...Types>
-auto RetainEditables(Types&... iData) {
+auto GetEditables(Types&... iData) {
 	//TODO: Add global mutex, for edition lock
-	return ::std::forward_as_tuple(iData.RetainEditable()...);
+	return ::std::forward_as_tuple(iData.GetEditable()...);
 }
+
+class cEditionHandle
+{
+    public:
+    virtual void EditStart() {};
+    virtual void EditStop() {};
+};
+
+template <class T>
+class cEditionHandleT : public cEditionHandle
+{
+    public:
+    ~cEditionHandleT()
+    {
+    }
+
+    cEditionHandleT(::nGaia::cComponentFixedData<T>& iData) :
+        mData(iData)
+    {
+    }
+
+    virtual void EditStart()
+    {
+        mData.Lock();
+
+    }
+
+    virtual void EditStop()
+    {
+        mData.Unlock();
+    }
+
+    ::nGaia::cComponentFixedData<T>& mData;
+};
+
 
 template <class ... Types>
-auto ReleaseEditables(Types&... iData) {
-	//TODO: Add global mutex, for edition lock
-	return ::std::forward_as_tuple(iData.ReleaseEditable()...);
-}
-/*
-auto GetEditionHandlers(::std::vector<cComponentData&> iData) {
-	return iData;
-	//TODO: Add global mutex, for edition lock
-	// return ::std::make_tuple(iData.GetEditionHandler()...);
-}*/
+class cEditionHandles
+{
+    public:
+    ~cEditionHandles()
+    {
+        for (auto& handle: mHandles)
+        {
+            handle->EditStop();
+            delete handle;
+        }
+    }
 
-/* template <class ...Types>
-auto GetEditionHandlers(Types... iData) {
-	//TODO: Add global mutex, for edition lock
-	return ::std::make_tuple(iData.GetEditionHandler()...);
-} */
+    cEditionHandles(Types& ... iData) :
+        mHandles({new cEditionHandleT(iData)...})
+    {
+        for (auto& handle: mHandles)
+            handle->EditStart();
+    }
+
+    ::std::vector<cEditionHandle*> mHandles;
+};
 
 }
